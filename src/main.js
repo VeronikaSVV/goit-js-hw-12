@@ -80,8 +80,7 @@ async function handleSubmit(event) {
 async function onLoadMore() {
     page++;
 
-    loadBtn.disabled = true;
-
+    hideLoadMoreButton();
     showLoader();
 
     try {
@@ -90,24 +89,24 @@ async function onLoadMore() {
         createGallery(data.hits);
 
         const galleryCard = document.querySelector(".gallery-item");
-
         const cardHeight = galleryCard.getBoundingClientRect().height;
 
-            window.scrollBy({
+        window.scrollBy({
             top: cardHeight * 2,
             behavior: "smooth",
-            });
-
+        });
 
         const totalPages = Math.ceil(data.totalHits / 15);
 
-        if (page >= totalPages) {
+        if (page < totalPages) {
+            showLoadMoreButton();
+        } else {
             hideLoadMoreButton();
 
-             iziToast.info({
-        message: "We're sorry, but you've reached the end of search results.",
-        position: "topRight",
-    });
+            iziToast.info({
+                message: "We're sorry, but you've reached the end of search results.",
+                position: "topRight",
+            });
         }
 
     } catch (error) {
@@ -117,6 +116,5 @@ async function onLoadMore() {
         });
     } finally {
         hideLoader();
-        loadBtn.disabled = false;
     }
 }
